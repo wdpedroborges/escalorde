@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Escalorde</title>
+</head>
+<style type="text/css">
+
+	h2 {
+		background: brown;
+		color: #fff;
+		padding: 5px;
+	}
+
+	h3 {
+		background: seagreen;
+		color: #fff;
+		padding: 5px;
+	}
+
+	/* VIOLÃO */
+	.braco {
+		display: grid;
+		grid-template-columns: repeat(13, 1fr);
+	}
+
+	.casa {
+		display: grid;
+		min-height: 200px;
+	}
+
+	.nota-braco {
+		border: 1px solid #212121;
+		min-height: 10px;
+		text-align: center;
+		font-size: 10px;
+		color: #212121;
+		line-height: 300%;
+	}
+
+	#contagemCasas {
+		display: grid;
+		grid-template-columns: repeat(13, 1fr);
+	}
+
+	#contagemCasas div {
+		border: 1px solid #fff;
+		background: brown;
+		color: #fff;
+		text-align: center;
+	}
+
+	.cordas-soltas {
+		background: #212121;
+		color: #fff;
+		text-align: center;
+		line-height: 200%;
+		border-right: 5px solid #ccc;
+	}
+
+	.nota-encontrada {
+		background: dodgerblue;
+	}
+
+	.primeira-nota {
+		background: seagreen;
+	}
+
+	/* Notas Escala */
+	#notasEscala::before {
+		content: 'Notas da escala';
+	}
+	/* Tríades */
+	#triades::before {
+		content: 'Tríades';
+	}
+	/* Tétrades */
+	#tetrades::before {
+		content: 'Tétrades';
+	}
+	/* Sextas */
+	#sextas::before {
+		content: 'Sextas';
+	}
+	/* Nonas */
+	#nonas::before {
+		content: 'Nonas';
+	}
+	/* Sétima e Nona */
+	#setimasNonas::before {
+		content: 'Sétima e Nona';
+	}
+	/* Décima Primeira */
+	#decimaPrimeira::before {
+		content: 'Décima Primeira';
+	}
+	/* Décima Terceira */
+	#decimaTerceira::before {
+		content: 'Décima Terceira';
+	}
+	/* Primeira Inversão */
+	#primeiraInversao::before {
+		content: 'Primeira Inversão';
+	}
+	/* Segunda Inversão */
+	#segundaInversao::before {
+		content: 'Segunda Inversão';
+	}
+	/* Terceira Inversão */
+	#terceiraInversao::before {
+		content: 'Terceira Inversão';
+	}
+
+	.before::before {
+		font-weight: bolder;
+		font-size: 1rem;
+		margin-bottom: 1rem;
+		background: #212121;
+		padding: 7px;
+		border-radius: 1rem;
+		text-align: center;
+		color: #fff;
+	}
+
+	/* Container acordes */
+	#containerAcordes {
+		display: grid;
+		grid-template-columns: repeat( auto-fit, minmax(200px, 1fr) );
+		grid-gap: 1rem;
+		max-width: 100%;
+		margin-top: 1rem;
+		display: none;
+	}
+
+	#containerAcordes div {
+		border: 1px solid #606060;
+		padding: 1rem;
+		border-radius: 1rem;
+		background: lightyellow;
+		max-height: 350px;
+		overflow: scroll;
+	}
+
+	#containerAcordes div p {
+		cursor: pointer;
+	}
+
+	#containerAcordes div p:hover {
+		text-decoration: underline;
+	}
+
+	/* Inputs */
+
+	#inputs {
+		margin-top: 2rem;
+		border: 1px dashed #ccc;
+		display: flex;
+		justify-content: space-around;
+		padding: 1rem;
+	}
+
+	input {
+		margin: 1rem;
+		padding: 5px;
+		border: none;
+		border-bottom: 1px solid #606060;
+		text-align: center;
+		font-weight: bolder;
+		font-size: 1rem;
+	}
+
+	select {
+		padding: 1rem;
+		border-radius: 1rem;
+	}
+
+	label {
+		font-weight: bolder;
+		cursor: pointer;
+	}
+
+	button {
+		padding: 1rem;
+		border: none;
+		background: seagreen;
+		color: #fff;
+		border-radius: 1rem;
+		cursor: pointer;
+	}
+
+	button:hover {
+		opacity: .75;
+	}
+</style>
+<body>
+
+<div id="violao">
+	<div id="contagemCasas"></div>
+</div>
+
+<div id="inputs">
+	<input type="text" id="tom" placeholder="Tom" value="C">
+	<div>
+		<label for="escalas">Escala: </label>
+		<select id="escalas">
+			<optgroup label="Diatônicas">
+				<option value="2M 3M 4J 5J 6M 7M">Maior natural</option>
+				<option value="2M 3m 4J 5J 6m 7m">Menor natural</option>
+				<option value="2M 3m 4J 5J 6m 7M">Menor harmônica</option>
+				<option value="2M 3m 4J 5J 6M 7M">Menor melódica</option>
+			</optgroup>
+			<optgroup label="Pentatônicas">
+				<option value="2M 3M 5J 6M">Maior</option>
+				<option value="3m 4J 5J 7m">Menor</option>
+			</optgroup>
+			<optgroup label="Blues">
+				<option value="2M 2A 3M 5J 6M">Maior</option>
+				<option value="3m 4J 4A 5J 7m">Menor</option>
+			</optgroup>
+			<optgroup label="Modos Gregos">
+				<option value="2M 3M 4J 5J 6M 7M">Jônico</option>
+				<option value="2M 3m 4J 5J 6M 7m">Dórico</option>
+				<option value="2m 3m 4J 5J 6M 7m">Frígio</option>
+				<option value="2M 3M 4A 5J 6M 7M">Lídio</option>
+				<option value="2M 3M 4J 5J 6M 7m">Mixolídio</option>
+				<option value="2M 3m 4J 5J 6m 7m">Eólio</option>
+				<option value="2m 3m 4J 5- 6m 7m">Lócrio</option>
+			</optgroup>
+			<optgroup label="Escalas exóticas">
+				<option value="2M 3m 5J 6m">Japonesa</option>
+				<option value="2M 3M 4J 5J 6m 7m">Indiana</option>
+				<option value="2M 3m 4J 4A 5A 6M 7M">Árabe</option>
+				<option value="2m 3M 4J 5- 6m 7M">Persa</option>
+				<option value="2M 3m 4A 5J 6m 7M">Húngara (Cigana)</option>
+				<option value="2M 3m 4A 5J 6M 7m">Ucraniana</option>
+			</optgroup>
+		</select>
+	</div>
+	<button id="btnCalcular">Calcular</button>
+</div>
+
+<div id="containerAcordes">
+	<div>
+		<h2>Progressões</h2>
+		<h3>Ciclo das quintas</h3>
+		<p>I ► IV ► VII ► III ► VI ► II ► V</p>
+		<h3>Ciclo das quintas invertido</h3>
+		<p>I ► V ► II ► VI ► III ► VII ► IV</p>
+		<h3>Ciclo das terças</h3>
+		<p>I ► VI ► IV ► II ► VII ► V ► III</p>
+		<h3>Ciclo das sextas</h3>
+		<p>I ► III ► V ► VII ► II ► IV ► VI</p>
+		<h3>Comum 1</h3>
+		<p>I ► V ► VI ► IV</p>
+		<h3>Comum 2</h3>
+		<p>VI ► IV ► I ► V</p>
+		<h3>Comum 3</h3>
+		<p>I ► IV ► VI ► V</p>
+	</div>
+	<div class="before" id="notasEscala"></div>
+	<div class="before" id="triades"></div>
+	<div class="before" id="tetrades"></div>
+	<div class="before" id="sextas"></div>
+	<div class="before" id="nonas"></div>
+	<div class="before" id="setimasNonas"></div>
+	<div class="before" id="decimaPrimeira"></div>
+	<div class="before" id="decimaTerceira"></div>
+	<div class="before" id="primeiraInversao"></div>
+	<div class="before" id="segundaInversao"></div>
+	<div class="before" id="terceiraInversao"></div>
+</div>
+
+<script type="text/javascript" src="dadosUteis.js"></script>
+<script type="text/javascript">
+
+let btnCalcular = document.querySelector('#btnCalcular');
+btnCalcular.addEventListener('click', () => {
+
+	document.getElementById('containerAcordes').style.display = 'grid';
+
+	document.getElementById('notasEscala').innerText = '';
+	document.getElementById('triades').innerText = '';
+	document.getElementById('tetrades').innerText = '';
+	document.getElementById('sextas').innerText = '';
+	document.getElementById('nonas').innerText = '';
+	document.getElementById('setimasNonas').innerText = '';
+	document.getElementById('decimaPrimeira').innerText = '';
+	document.getElementById('decimaTerceira').innerText = '';
+	document.getElementById('primeiraInversao').innerText = '';
+	document.getElementById('segundaInversao').innerText = '';
+	document.getElementById('terceiraInversao').innerText = '';
+
+	let tom = document.getElementById('tom').value;
+	let padrao = (document.getElementById('escalas').value).split(' ');
+
+	let escala = geraEscala(tom, padrao);
+
+	document.getElementById('notasEscala').innerHTML = `<p id="pNotasEscala">${escala}</p>`;
+
+	let r;
+	for (let i = 0; i < escala.length; i++) {
+		r = geraAcorde(escala[i], escala, incluirSetima = false, incluirSexta = false, incluirNona = false, incluirDecimaPrimeira = false, incluirDecimaTerceira = false, incluirSuspensao = false, inversao = 0);
+		document.getElementById('triades').innerHTML += `<p title="${r[0]}" class="acorde-gerado"><strong>${numeroParaRomano(i + 1)}</strong>. ${r[1]}</p>`;
+	}
+
+	for (let i = 0; i < escala.length; i++) {
+		r = geraAcorde(escala[i], escala, incluirSetima = true, incluirSexta = false, incluirNona = false, incluirDecimaPrimeira = false, incluirDecimaTerceira = false, incluirSuspensao = false, inversao = 0);
+		document.getElementById('tetrades').innerHTML += `<p title="${r[0]}" class="acorde-gerado"><strong>${numeroParaRomano(i + 1)}</strong>. ${r[1]}</p>`;
+	}
+
+	for (let i = 0; i < escala.length; i++) {
+		r = geraAcorde(escala[i], escala, incluirSetima = false, incluirSexta = true, incluirNona = false, incluirDecimaPrimeira = false, incluirDecimaTerceira = false, incluirSuspensao = false, inversao = 0);
+		document.getElementById('sextas').innerHTML += `<p title="${r[0]}" class="acorde-gerado"><strong>${numeroParaRomano(i + 1)}</strong>. ${r[1]}</p>`;
+	}
+
+	for (let i = 0; i < escala.length; i++) {
+		r = geraAcorde(escala[i], escala, incluirSetima = false, incluirSexta = false, incluirNona = true, incluirDecimaPrimeira = false, incluirDecimaTerceira = false, incluirSuspensao = false, inversao = 0);
+		document.getElementById('nonas').innerHTML += `<p title="${r[0]}" class="acorde-gerado"><strong>${numeroParaRomano(i + 1)}</strong>. ${r[1]}</p>`;
+	}
+
+	for (let i = 0; i < escala.length; i++) {
+		r = geraAcorde(escala[i], escala, incluirSetima = true, incluirSexta = false, incluirNona = true, incluirDecimaPrimeira = false, incluirDecimaTerceira = false, incluirSuspensao = false, inversao = 0);
+		document.getElementById('setimasNonas').innerHTML += `<p title="${r[0]}" class="acorde-gerado"><strong>${numeroParaRomano(i + 1)}</strong>. ${r[1]}</p>`;
+	}
+
+	for (let i = 0; i < escala.length; i++) {
+		r = geraAcorde(escala[i], escala, incluirSetima = false, incluirSexta = false, incluirNona = false, incluirDecimaPrimeira = true, incluirDecimaTerceira = false, incluirSuspensao = false, inversao = 0);
+		document.getElementById('decimaPrimeira').innerHTML += `<p title="${r[0]}" class="acorde-gerado"><strong>${numeroParaRomano(i + 1)}</strong>. ${r[1]}</p>`;
+	}
+
+	for (let i = 0; i < escala.length; i++) {
+		r = geraAcorde(escala[i], escala, incluirSetima = false, incluirSexta = false, incluirNona = false, incluirDecimaPrimeira = false, incluirDecimaTerceira = true, incluirSuspensao = false, inversao = 0);
+		document.getElementById('decimaTerceira').innerHTML += `<p title="${r[0]}" class="acorde-gerado"><strong>${numeroParaRomano(i + 1)}</strong>. ${r[1]}</p>`;
+	}
+
+	for (let i = 0; i < escala.length; i++) {
+		r = geraAcorde(escala[i], escala, incluirSetima = false, incluirSexta = false, incluirNona = false, incluirDecimaPrimeira = false, incluirDecimaTerceira = false, incluirSuspensao = false, inversao = 1);
+		document.getElementById('primeiraInversao').innerHTML += `<p title="${r[0]}" class="acorde-gerado"><strong>${numeroParaRomano(i + 1)}</strong>. ${r[1]}</p>`;
+	}
+
+	for (let i = 0; i < escala.length; i++) {
+		r = geraAcorde(escala[i], escala, incluirSetima = false, incluirSexta = false, incluirNona = false, incluirDecimaPrimeira = false, incluirDecimaTerceira = false, incluirSuspensao = false, inversao = 2);
+		document.getElementById('segundaInversao').innerHTML += `<p title="${r[0]}" class="acorde-gerado"><strong>${numeroParaRomano(i + 1)}</strong>. ${r[1]}</p>`;
+	}
+
+	for (let i = 0; i < escala.length; i++) {
+		r = geraAcorde(escala[i], escala, incluirSetima = false, incluirSexta = false, incluirNona = false, incluirDecimaPrimeira = false, incluirDecimaTerceira = false, incluirSuspensao = false, inversao = 3);
+		document.getElementById('terceiraInversao').innerHTML += `<p title="${r[0]}" class="acorde-gerado"><strong>${numeroParaRomano(i + 1)}</strong>. ${r[1]}</p>`;
+	}
+
+	let todosAcordesGerados = [... document.querySelectorAll('.acorde-gerado')];
+
+	for (let i = 0; i < todosAcordesGerados.length; i++) {
+		todosAcordesGerados[i].addEventListener('click', function ok() {
+			limpaNotasViolao();
+			let notas = this.getAttribute('title').split(',');
+			for (let i = 0; i < notas.length; i++) {
+				if (i === 0) {
+					achaNotaViolao(notas[i], 'nota-encontrada', true);
+				} else {
+					achaNotaViolao(notas[i], 'nota-encontrada', false);
+				}
+			}
+		});
+	}
+
+	document.getElementById('pNotasEscala').addEventListener('click', () => {
+		limpaNotasViolao();
+		let notas = document.getElementById('pNotasEscala').innerText.split(',');
+		for (let i = 0; i < notas.length; i++) {
+			if (i === 0) {
+				achaNotaViolao(notas[i], 'nota-encontrada', true);
+			} else {
+				achaNotaViolao(notas[i], 'nota-encontrada', false);
+			}
+		}
+	});
+});
+
+function criaDiv() {
+	return document.createElement('div');
+}
+
+function numeroParaRomano(numero) {
+	switch(numero) {
+		case 1:
+			return 'I';
+		case 2:
+			return 'II';
+		case 3:
+			return 'III';
+		case 4:
+			return 'IV';
+		case 5:
+			return 'V';
+		case 6:
+			return 'VI';
+		case 7:
+			return 'VII';
+		case 8:
+			return 'VIII';
+	}
+}
+
+function removeElementoArray(elemento, array) {
+	let novoArray = [];
+	for (let i = 0; i < array.length; i++) {
+		if (array[i] !== elemento) {
+			novoArray.push(array[i]);
+		}
+	}
+
+	return novoArray;
+}
+
+function criaBracoViolao(local = '#violao') {
+	function criaCasa(numero, cs = false) {
+		let casa = criaDiv();
+		casa.classList.add('casa');
+		for (let i = 0; i < 6; i++) {
+			let notaBraco = criaDiv();
+			if (!cs) {
+				notaBraco.classList.add('nota-braco');
+			} else {
+				notaBraco.classList.add('nota-corda-solta');
+			}
+			notaBraco.setAttribute('title', `${BRACO_VIOLAO[numero][i]}`);
+			notaBraco.innerText = `${BRACO_VIOLAO[numero][i]}`;
+			casa.append(notaBraco);
+		}
+		return casa;
+	}
+
+	let braco = criaDiv();
+	braco.classList.add('braco');
+	for (let i = 0; i < 12; i++) {
+		braco.append(criaCasa(i));
+	}
+
+	let contagemCasas = document.getElementById('contagemCasas');
+	for (let i = 0; i < 13; i++) {
+		let tmp = criaDiv();
+		tmp.innerText = i;
+		contagemCasas.append(tmp);
+	}
+
+	let cordasSoltas = criaCasa(11, true);
+	cordasSoltas.classList.add('cordas-soltas');
+	braco.prepend(cordasSoltas);
+
+	document.querySelector(local).prepend(braco);
+}
+
+function achaNotaViolao(nota, nome = 'nota-encontrada', primeiraNota = false) {
+	let notasBraco = [... document.querySelectorAll('.nota-braco')];
+	let notasCordasSoltas = [... document.querySelectorAll('.nota-corda-solta')];
+
+	for (let i = 0; i < notasBraco.length; i++) {
+
+		let notaEncontrada = notasBraco[i].getAttribute('title').split('/');
+
+		if (notaEncontrada[0] === nota || notaEncontrada[1] === nota) {
+			notasBraco[i].classList.add(nome);
+			
+			if (primeiraNota) {
+				notasBraco[i].classList.add('primeira-nota');
+			}
+		}
+	}
+
+	for (let i = 0; i < notasCordasSoltas.length; i++) {
+		if (notasCordasSoltas[i].getAttribute('title') === nota) {
+			notasCordasSoltas[i].classList.add(nome);
+
+			if (primeiraNota) {
+				notasCordasSoltas[i].classList.add('primeira-nota');
+			}
+		}
+	}
+}
+
+function limpaNotasViolao() {
+	let notasBraco = [... document.querySelectorAll('.nota-braco')];
+	let notasCordasSoltas = [... document.querySelectorAll('.nota-corda-solta')];
+
+	for (let i = 0; i < notasBraco.length; i++) {
+		notasBraco[i].classList.remove('nota-encontrada');
+		notasBraco[i].classList.remove('primeira-nota');
+	}
+
+	for (let i = 0; i < notasCordasSoltas.length; i++) {
+		notasCordasSoltas[i].classList.remove('nota-encontrada');
+		notasCordasSoltas[i].classList.remove('primeira-nota');
+	}
+}
+
+criaBracoViolao();
+
+function posicaoIntervalo(intervalo) {
+	let posicao;
+	for (let i = 0; i < INDICE_INTERVALOS.length; i++) {
+		if (INDICE_INTERVALOS[i] === intervalo) {
+			posicao = i;
+			break;
+		}
+	}
+	return posicao;
+}
+
+function posicaoNota(nota) {
+	let posicao;
+	for (let i = 0; i < INTERVALOS.length; i++) {
+		if (INTERVALOS[i][0] === nota) {
+			posicao = i;
+			break;
+		}
+	}
+
+	return posicao;
+}
+
+function encontraNotaIntervalo(nota, intervalo) {
+	return intervaloComAcidente(nota, intervalo);
+}
+
+function haNaString(string, valor) {
+	string = string.split('');
+	for (let i = 0; i < string.length; i++) {
+		if (valor === string[i]) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function relacaoEntreNotas(notaBase, notaRelativa) {
+	let r;
+	for (let i = 0; i < INDICE_INTERVALOS.length; i++) {
+		if (encontraNotaIntervalo(notaBase, INDICE_INTERVALOS[i]) === notaRelativa) {
+			r = INDICE_INTERVALOS[i];
+			break;
+		}
+	}
+
+	return r;
+}
+
+function intervaloComAcidente(nota, intervalo) {
+	let modelo = ['C/Dbb/B#/A###', 'C#/Db/Ebbb/B##', 'D/Ebb/C##/Fbbb/B###', 'D#/Eb/Fbb/C###', 'E/Fb/D##/Gbbb', 'F/Gbb/E#/D###', 'F#/Gb/Abbb/E##', 'G/Abb/F##/E###', 'G#/Ab/Bbbb/F###', 'A/Bbb/G##/Cbbb', 'A#/Bb/Cbb/G###', 'B/A##/Cb/Dbbb'];
+
+	modelo = multiplicaArray(modelo, 11);
+
+	function obtemPosicaoNotaBase(nota) {
+		let p;
+		for (let i = 0; i < modelo.length; i++) {
+
+			let tmp = modelo[i].split('/');
+
+			for (let j = 0; j < tmp.length; j++) {
+				if (nota === tmp[j]) {
+					return i;
+				}
+			}
+		}
+	}
+
+	function geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo) {
+		let r;
+		for (let i = 0; i < conjuntoNotasPossiveis.length; i++) {
+			if (haNaString(conjuntoNotasPossiveis[i], notaBaseIntervalo)) {
+				r = conjuntoNotasPossiveis[i];
+				break;
+			}
+		}
+
+		return r;	
+	}
+
+	let resultado = 0, notaBaseIntervalo, posicaoNotaBase, conjuntoNotasPossiveis;
+
+	if (nota && intervalo) {
+		switch(intervalo) {
+			case '2m':
+				// 1 passo
+				notaBaseIntervalo = intervaloSemAcidente(nota, 2);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 1].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);	
+				break;
+			case '2M':
+				// 2 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 2);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 2].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '2A':
+				// 3 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 2);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 3].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '3m':
+				// 3 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 3);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 3].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '3M':
+				// 4 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 3);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 4].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '4J':
+				// 5 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 4);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 5].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '4A':
+				// 6 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 4);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 6].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '5-':
+				// 6 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 5);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 6].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '5J':
+				// 7 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 5);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 7].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '5A':
+				// 8 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 5);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 8].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '6m':
+				// 8 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 6);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 8].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '6M':
+				// 9 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 6);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 9].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '7-':
+				// 9 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 7);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 9].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '7m':
+				// 10 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 7);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 10].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+				break;
+			case '7M':
+				// 11 passos
+				notaBaseIntervalo = intervaloSemAcidente(nota, 7);
+				posicaoNotaBase = obtemPosicaoNotaBase(nota);
+				conjuntoNotasPossiveis = modelo[posicaoNotaBase + 11].split('/');
+				resultado = geraResultado(conjuntoNotasPossiveis, notaBaseIntervalo);
+		}
+	}
+
+	return resultado;
+}
+
+function intervaloSemAcidente(nota, intervalo) {
+	if (nota) {
+		nota = nota.replaceAll('#', '');
+		nota = nota.replaceAll('##', '');
+		nota = nota.replaceAll('###', '');
+		nota = nota.replaceAll('b', '');
+		nota = nota.replaceAll('bb', '');
+		nota = nota.replaceAll('bbb', '');
+
+		let escala = multiplicaArray(['C', 'D', 'E', 'F', 'G', 'A', 'B'], 3);
+		let posicaoNotaBase;
+		for (let i = 0; i < escala.length; i++) {
+			if (nota === escala[i]) {
+				posicaoNotaBase = i;
+				break;
+			}
+		}
+		return escala[posicaoNotaBase + intervalo - 1];
+	}
+
+	return 0;
+}
+
+function geraEscala(tom, padrao) {
+	let escala = [];
+	escala.push(tom);
+	for (let i = 0; i < padrao.length; i++) {
+		escala.push(INTERVALOS[posicaoNota(tom)][posicaoIntervalo(padrao[i])]);
+	}
+
+	return escala;
+}
+
+function multiplicaArray(array, vezes) {
+	let novoArray = [];
+	for (let i = 0; i < vezes; i++) {
+		for (let j = 0; j < array.length; j++) {
+			novoArray.push(array[j]);
+		}
+	}
+
+	return novoArray;
+}
+
+function segundaParaNona(intervalo) {
+	switch(intervalo) {
+		case '2m':
+			return '(9-)';
+		case '2M':
+			return '(9+)';
+		case '2A':
+			return '(9A)';
+	}
+}
+
+function sextaParaDecimaTerceira(intervalo) {
+	switch(intervalo) {
+		case '6m':
+			return '(13-)';
+		case '6M':
+			return '(13+)';
+	}
+}
+
+function quartaParaDecimaPrimeira(intervalo) {
+	switch(intervalo) {
+		case '4A':
+			return '(11+)';
+		case '4J':
+			return '(11)';
+	}
+}
+
+function geraAcorde(notaBase, escala, incluirSetima = false, incluirSexta = false, incluirNona = false, incluirDecimaPrimeira = false, incluirDecimaTerceira = false, incluirSuspensao = false, inversao = 0) {
+	let terca = '', quinta = '', setima = '', sexta = '', nona = '', decimaPrimeira = '', decimaTerceira = '';
+	let cifra = [notaBase, '', '', '', '', '', '', '', '', '', ''];
+	let notasAcorde = [];
+
+	let quintaEspecial;
+
+	for (let i = 0; i < escala.length; i++) {
+		switch(relacaoEntreNotas(notaBase, escala[i])) {
+			case '3m':
+				if (!incluirSuspensao) {
+					terca = escala[i];
+					cifra[1] = 'm';
+					notasAcorde.push(terca);
+				}
+				break;
+			case '3M':
+				if (!incluirSuspensao) {
+					terca = escala[i];
+					notasAcorde.push(terca);
+				}
+				break;
+			case '5-':
+			case '5A':
+				quintaEspecial = relacaoEntreNotas(notaBase, escala[i]);
+				quinta = escala[i];
+				cifra[3] = `(${relacaoEntreNotas(notaBase, escala[i])})`;
+				notasAcorde.push(quinta);
+				break;
+			case '5J':
+				quinta = escala[i];
+				notasAcorde.push(quinta);
+				break;
+			case '7-':
+			case '7m':
+			case '7M':
+				let relacao = relacaoEntreNotas(notaBase, escala[i]);
+				if (incluirSetima) {
+					setima = escala[i];
+					if (relacao !== '7m') {
+						cifra[2] = relacao;
+					} else {
+						cifra[2] = '7';
+					}
+					notasAcorde.push(setima);
+				} else {
+					setima = escala[i];
+				}
+				break;
+			case '6m':
+			case '6M':
+				if (incluirSexta) {
+					sexta = escala[i];
+					cifra[4] = `(${relacaoEntreNotas(notaBase, escala[i])})`;
+					notasAcorde.push(sexta);
+				} else if (incluirDecimaTerceira) {
+					decimaTerceira = escala[i];
+					cifra[4] = sextaParaDecimaTerceira(relacaoEntreNotas(notaBase, escala[i]));
+					notasAcorde.push(decimaTerceira);
+				}
+				break;
+			case '2m':
+			case '2M':
+			case '2A':
+				if (incluirNona) {
+					nona = escala[i];
+					cifra[4] = segundaParaNona(relacaoEntreNotas(notaBase, escala[i]));
+					notasAcorde.push(nona);
+				}
+				break;
+			case '4J':
+			case '4A':
+				if (incluirDecimaPrimeira) {
+					decimaPrimeira = escala[i];
+					cifra[4] = quartaParaDecimaPrimeira(relacaoEntreNotas(notaBase, escala[i]));
+					notasAcorde.push(decimaPrimeira);
+				} else if (incluirSuspensao) {
+					quarta = escala[i];
+					notasAcorde.unshift(quarta);
+					cifra[4] = 'sus';
+				}
+				break;
+		}
+	}
+
+	let powerChord = false;
+	if (!terca && quinta) {
+		if (!quintaEspecial) {
+			cifra[1] = '5';
+		} else {
+			cifra[1] = `(${quintaEspecial})`;
+			cifra[3] = '';
+		}
+		powerChord = true;
+	}
+
+	if (incluirSetima && powerChord) {
+		let tmp = cifra[3];
+		cifra[3] = `(${cifra[2]})`;
+		cifra[2] = tmp;
+	}
+
+	notasAcorde.unshift(notaBase);
+
+	let vazio = ['', ''];
+
+	if (inversao > 0) {
+		switch(inversao) {
+			case 1:
+				if (terca) {
+					notasAcorde = removeElementoArray(terca, notasAcorde);
+					notasAcorde.unshift(terca);
+					cifra[5] = `/${terca}`;
+				} else {
+					return vazio;
+				}
+				break;
+			case 2:
+				if (quinta) {
+					notasAcorde = removeElementoArray(quinta, notasAcorde);
+					notasAcorde.unshift(quinta);
+					cifra[5] = `/${quinta}`;
+				} else {
+					return vazio;
+				}
+				break;
+			case 3:
+				if (setima) {
+					notasAcorde = removeElementoArray(setima, notasAcorde);
+					notasAcorde.unshift(setima);
+					cifra[5] = `/${setima}`;
+				} else {
+					return vazio;
+				}
+				break;
+		}
+	}
+
+	cifra = cifra.join('');
+	if (incluirSetima && !setima || incluirSexta && !sexta || incluirNona && !nona || incluirDecimaPrimeira && !decimaPrimeira || incluirDecimaTerceira && !decimaTerceira) {
+		return vazio;
+	}
+
+	return [notasAcorde, cifra];
+}
+
+</script>
+
+</body>
+</html>
